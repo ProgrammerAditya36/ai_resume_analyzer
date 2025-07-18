@@ -114,6 +114,24 @@ form {
   .uploader-selected-file {
     @apply flex items-center justify-between p-3 bg-gray-50 rounded-2xl;
   }
+  .uploader-fade-enter {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  .uploader-fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .uploader-fade-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .uploader-fade-exit-active {
+    opacity: 0;
+    transform: translateY(-40px);
+    transition: opacity 0.4s, transform 0.4s;
+  }
 }
 
 @utility bg-gradient {
