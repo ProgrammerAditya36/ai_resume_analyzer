@@ -1,3 +1,4 @@
+import { MODEL } from "../../constants";
 import { create } from "zustand";
 
 declare global {
@@ -74,6 +75,11 @@ interface PuterStore {
     ) => Promise<AIResponse | undefined>;
     feedback: (
       path: string,
+      message: string
+    ) => Promise<AIResponse | undefined>;
+    feedbackJobDescription: (
+      resumePath: string,
+      jobDescriptionFilePath: string,
       message: string
     ) => Promise<AIResponse | undefined>;
     img2txt: (
@@ -350,7 +356,41 @@ export const usePuterStore = create<PuterStore>((set, get) => {
           ],
         },
       ],
-      { model: "claude-sonnet-4" }
+      { model: MODEL }
+    ) as Promise<AIResponse | undefined>;
+  };
+
+  const feedbackJobDescription = async (
+    resumePath: string,
+    jobDescriptionFilePath: string,
+    message: string
+  ) => {
+    const puter = getPuter();
+    if (!puter) {
+      setError("Puter.js not available");
+      return;
+    }
+    return puter.ai.chat(
+      [
+        {
+          role: "user",
+          content: [
+            {
+              type: "file",
+              puter_path: resumePath,
+            },
+            {
+              type: "file",
+              puter_path: jobDescriptionFilePath,
+            },
+            {
+              type: "text",
+              text: message,
+            },
+          ],
+        },
+      ],
+      { model: MODEL }
     ) as Promise<AIResponse | undefined>;
   };
 
@@ -439,6 +479,11 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         options?: PuterChatOptions
       ) => chat(prompt, imageURL, testMode, options),
       feedback: (path: string, message: string) => feedback(path, message),
+      feedbackJobDescription: (
+        resumePath: string,
+        jobDescriptionFilePath: string,
+        message: string
+      ) => feedbackJobDescription(resumePath, jobDescriptionFilePath, message),
       img2txt: (image: string | File | Blob, testMode?: boolean) =>
         img2txt(image, testMode),
     },

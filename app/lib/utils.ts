@@ -15,3 +15,7 @@ export function formatSize(bytes: number): string {
   }
   return `${rounded.toFixed(1)} ${units[i]}`;
 }
+
+export function generateUUID(): string {
+  return crypto.randomUUID();
+}
