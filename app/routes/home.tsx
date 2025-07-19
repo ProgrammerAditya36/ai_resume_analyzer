@@ -1,10 +1,9 @@
 import type { Route } from "./+types/home";
 import Navbar from "~/components/Navbar";
-import { resumes } from "../../constants";
 import ResumeCard from "~/components/ResumeCard";
 import { usePuterStore } from "~/lib/puter";
 import { useNavigate } from "react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,13 +13,34 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { auth } = usePuterStore();
+  const { auth, kv } = usePuterStore();
+  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
   useEffect(() => {
     if (!auth.isAuthenticated) {
       navigate("/auth?next=/");
     }
   }, [auth.isAuthenticated, navigate]);
+
+  useEffect(() => {
+    const loadResumes = async () => {
+      setIsLoading(true);
+      const resumes = (await kv.list("*", true)) as KVItem[];
+      console.log(resumes);
+      if (!resumes) return;
+      const parsedResumes = resumes.map((resume) =>
+        JSON.parse(resume.value)
+      ) as Resume[];
+      console.log(parsedResumes);
+      setResumes(parsedResumes);
+
+      setIsLoading(false);
+    };
+    loadResumes();
+  }, []);
+
   return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover">
       <Navbar />
@@ -30,8 +50,12 @@ export default function Home() {
           <h1>Track Your Applications & Resume Ratings</h1>
           <h2>Review your submissions and check AI-powered feedback.</h2>
         </div>
-
-        {resumes.length > 0 && (
+        {isLoading && (
+          <div className="flex justify-center items-center h-full">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+          </div>
+        )}
+        {resumes.length > 0 && !isLoading && (
           <div className="resumes-section">
             {resumes.map((resume) => (
               <ResumeCard key={resume.id} resume={resume} />

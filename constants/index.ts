@@ -180,7 +180,7 @@ export const resumes: Resume[] = [
     },
   },
 ];
-export const MODEL = "claude-sonnet-4";
+export const MODEL = "claude-3-7-sonnet";
 export const AIResponseFormat = `
       interface Feedback {
       overallScore: number; //max 100

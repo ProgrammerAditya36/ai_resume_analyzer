@@ -41,15 +41,24 @@ const UploadJobPDF = () => {
       setStatusText("Converting to image...");
       const { file: imageFile } = await convertPdfToImage(resumePDF);
       if (!imageFile) return setStatusText("Failed to convert to image");
+      const { file: jobDescriptionFile } = await convertPdfToImage(jobPDF);
+      if (!jobDescriptionFile)
+        return setStatusText("Failed to convert job description to image");
       setStatusText("Uploading image...");
       const uploadedImage = await fs.upload([imageFile]);
       if (!uploadedImage) return setStatusText("Failed to upload image");
+      setStatusText("Uploading job description image...");
+      const uploadedJobDescriptionImage = await fs.upload([jobDescriptionFile]);
+      if (!uploadedJobDescriptionImage)
+        return setStatusText("Failed to upload job description image");
       setStatusText("Preparing data for analysis...");
       const uuid = generateUUID();
       const data = {
         id: uuid,
         resumePath: uploadedResume.path,
         imagePath: uploadedImage.path,
+        jobDescriptionPath: uploadedJobPDF.path,
+        jobDescriptionImagePath: uploadedJobDescriptionImage.path,
         companyName: "",
         jobTitle: "",
         jobDescription: "",
@@ -79,6 +88,7 @@ const UploadJobPDF = () => {
       await kv.set(uuid, JSON.stringify(data));
       setStatusText("Feedback received");
       console.log(data);
+      navigate(`/resume/${uuid}`);
     }
   };
   const handleJobPDFSelect = (file: File | null) => {
