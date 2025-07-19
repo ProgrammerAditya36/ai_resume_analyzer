@@ -64,7 +64,6 @@ const Resume = () => {
         setJobDescriptionImagePath("");
       }
       setFeedback(data.feedback);
-      // console.log({ resumeUrl, imageUrl, feedback: data.feedback });
     };
 
     loadResume();

@@ -28,12 +28,10 @@ export default function Home() {
     const loadResumes = async () => {
       setIsLoading(true);
       const resumes = (await kv.list("*", true)) as KVItem[];
-      console.log(resumes);
       if (!resumes) return;
       const parsedResumes = resumes.map((resume) =>
         JSON.parse(resume.value)
       ) as Resume[];
-      console.log(parsedResumes);
       setResumes(parsedResumes);
 
       setIsLoading(false);

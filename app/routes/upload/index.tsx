@@ -68,7 +68,6 @@ const Upload = () => {
       data.feedback = JSON.parse(feedbackText);
       await kv.set(uuid, JSON.stringify(data));
       setStatusText("Feedback received");
-      console.log(data);
       navigate(`/resume/${uuid}`);
     }
   };
